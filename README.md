@@ -1,1 +1,1 @@
-# learning-webgl-ferdianqbl
+# learning-webgl-ferdianqbl - Grafkom
