@@ -35,7 +35,8 @@ void main() {
 
   gl.useProgram(shaderProgram); // menggunakan program
 
-  // ==== Memulai penggambaran
+  // ==== Memulai penggambaran ====
+
   gl.clearColor(1.0, 0.65, 0.0, 1); // mengatur warna background (r, g, b, a)
   gl.clear(gl.COLOR_BUFFER_BIT); // menggambar background
 }
