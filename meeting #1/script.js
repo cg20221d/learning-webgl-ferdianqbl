@@ -4,7 +4,7 @@ function main() {
 
   // === mendefinisikan shaders code ===> Dijalankan GPU
 
-  // vertex shader --> disimpan sbg string
+  // vertex shader --> disimpan sbg string --> untuk posisi
   const vertexShaderCode = `
 void main() {
   
@@ -15,7 +15,7 @@ void main() {
   gl.shaderSource(vertexShaderObject, vertexShaderCode); // menghubungkan objek vertex shader dengan code
   gl.compileShader(vertexShaderObject); // mengcompile code vertex shader --> jadi .o
 
-  // Fragment shader
+  // Fragment shader --> untuk warna
   const fragmentShaderCode = `
 void main() {
 
