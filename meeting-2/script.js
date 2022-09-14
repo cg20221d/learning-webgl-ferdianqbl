@@ -6,12 +6,12 @@ function main() {
 
   const x1 = 0.5;
   const y1 = 0.5;
-  const x2 = 0.0;
-  const y2 = 0.0;
+  const x2 = 0.5;
+  const y2 = -0.5;
   const x3 = -0.5;
-  const y3 = 0.5;
-  const x4 = 0.5;
-  const y4 = -0.5;
+  const y3 = -0.5;
+  const x4 = -0.5;
+  const y4 = 0.5;
 
   // const vertices = [x1, y1, x2, y2];
   const vertices = [x1, y1, x2, y2, x3, y3, x4, y4];
@@ -78,11 +78,11 @@ void main() {
   gl.clear(gl.COLOR_BUFFER_BIT); // menggambar background
 
   // gl.drawArrays(gl.POINTS, 0, 1); // menggambar 1 titik
-  // gl.drawArrays(gl.POINTS, 0, 3); // menggambar 3 titik
+  // gl.drawArrays(gl.POINTS, 0, 4); // menggambar 3 titik
   // gl.drawArrays(gl.LINES, 0, 4); // menggambar garis
   // gl.drawArrays(gl.LINES_LOOP, 0, 4); // menggamba
   // gl.drawArrays(gl.LINE_STRIP, 0, 4); // menggambar
-  // gl.drawArrays(gl.TRIANGLES, 0, 4); // menggambar
+  gl.drawArrays(gl.TRIANGLES, 0, 3); // menggambar
   // gl.drawArrays(gl.TRIANGLES_STRIP, 0, 4); // menggambar
-  // gl.drawArrays(gl.TRIANGLES_FAN, 0, 4); // menggambar
+  // gl.drawArrays(gl.TRIANGLES_FAN, 0, 3); // menggambar
 }
