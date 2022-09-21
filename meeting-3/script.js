@@ -138,7 +138,9 @@ void main() {
 
     gl.clear(gl.COLOR_BUFFER_BIT);
     if (!freeze) {
-      theta += 0.1; // kecepatan rotasi
+      theta += 0.01;
+      x !== 0 ? theta += x : null;
+      y !== 0 ? theta += y : null;
       gl.uniform1f(uTheta, theta);
       gl.uniform1f(uX, x);
       gl.uniform1f(uY, y);
