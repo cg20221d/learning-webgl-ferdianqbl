@@ -23,14 +23,15 @@ function main() {
   attribute vec2 aPosition;
   attribute vec3 aColor;
   uniform float uTheta;
+  uniform float uX;
+  uniform float uY;
   varying vec3 vColor;
 void main() {
   vColor = aColor;
-  float x = -sin(uTheta) * aPosition.x + cos(uTheta) * aPosition.y;
-  float y = cos(uTheta) * aPosition.x + sin(uTheta) * aPosition.y;
+  float x = -sin(uTheta) * aPosition.x + cos(uTheta) * aPosition.y + uX;
+  float y = cos(uTheta) * aPosition.x + sin(uTheta) * aPosition.y + uY;
   gl_Position = vec4(x, y, 0.0, 1.0);
   vColor = aColor;
-  
 }
 `;
 
@@ -65,7 +66,11 @@ void main() {
 
   // Variabel lokal
   var theta = 0.0;
+  var x = 0.0;
+  var y = 0.0;
   let uTheta = gl.getUniformLocation(shaderProgram, "uTheta");
+  let uX = gl.getUniformLocation(shaderProgram, "uX");
+  let uY = gl.getUniformLocation(shaderProgram, "uY");
 
   const aPosition = gl.getAttribLocation(shaderProgram, "aPosition");
 
@@ -89,20 +94,43 @@ void main() {
 
   gl.clear(gl.COLOR_BUFFER_BIT); // menggambar background
 
-  // gl.drawArrays(gl.POINTS, 0, 1); // menggambar 1 titik
-  // gl.drawArrays(gl.POINTS, 0, 4); // menggambar 3 titik
-  // gl.drawArrays(gl.LINES, 0, 4); // menggambar garis
-  // gl.drawArrays(gl.LINES_LOOP, 0, 4); // menggamba
-  // gl.drawArrays(gl.LINE_STRIP, 0, 4); // menggambar
-  // gl.drawArrays(gl.LINE_LOOP, 0, 4); // menggambar
-  // gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); // menggambar
-  // gl.drawArrays(gl.TRIANGLE_FAN, 0, 4); // menggambar
-
   let freeze = false;
 
   canvas.addEventListener("click", function () {
     freeze = !freeze;
   });
+
+  document.addEventListener("keydown", function (event) {
+    event.code == "Space" ? freeze = !freeze : null;
+
+    if (event.code == "KeyA") {
+      x -= 0.1;
+    } else if (event.code == "KeyD") {
+      x += 0.1;
+    }
+    else if (event.code == "KeyW") {
+      y += 0.1;
+    }
+    else if (event.code == "KeyS") {
+      y -= 0.1;
+    }
+  });
+
+  document.addEventListener("keyup", function (event) {
+    if (event.code == "KeyA") {
+      x -= 0.0;
+    } else if (event.code == "KeyD") {
+      x += 0.0;
+    }
+    else if (event.code == "KeyW") {
+      y -= 0.0;
+    }
+    else if (event.code == "KeyS") {
+      y += 0.0;
+    }
+  });
+
+
 
   function render() {
     gl.clearColor(1.0, 0.65, 0.0, 1.0);  // Oranye
@@ -112,6 +140,8 @@ void main() {
     if (!freeze) {
       theta += 0.1; // kecepatan rotasi
       gl.uniform1f(uTheta, theta);
+      gl.uniform1f(uX, x);
+      gl.uniform1f(uY, y);
     }
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
     requestAnimationFrame(render);
