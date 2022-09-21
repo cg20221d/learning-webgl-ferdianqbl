@@ -7,14 +7,12 @@ function main() {
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
   // === mendefinisikan shaders code ===> Dijalankan GPU
-
   var vertices = [
-    0.5, 0.5, 0.0, 1.0, 1.0,   // A: kanan atas    (BIRU LANGIT)
-    0.0, 0.0, 1.0, 0.0, 1.0,   // B: bawah tengah  (MAGENTA)
-    -0.5, 0.5, 1.0, 1.0, 0.0,  // C: kiri atas     (KUNING)
-    0.0, 1.0, 1.0, 1.0, 1.0    // D: atas tengah   (PUTIH)
+    0.5, 0.0, 0.0, 1.0, 1.0,   // A: kanan atas    (BIRU LANGIT)
+    0.0, -0.5, 1.0, 0.0, 1.0,  // B: bawah tengah  (MAGENTA)
+    -0.5, 0.0, 1.0, 1.0, 0.0,  // C: kiri atas     (KUNING)
+    0.0, 0.5, 1.0, 1.0, 1.0    // D: atas tengah   (PUTIH)
   ];
-
   const buffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
@@ -27,7 +25,7 @@ function main() {
   uniform float uTheta;
   varying vec3 vColor;
 void main() {
- vColor = aColor;
+  vColor = aColor;
   float x = -sin(uTheta) * aPosition.x + cos(uTheta) * aPosition.y;
   float y = cos(uTheta) * aPosition.x + sin(uTheta) * aPosition.y;
   gl_Position = vec4(x, y, 0.0, 1.0);
@@ -100,12 +98,21 @@ void main() {
   // gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); // menggambar
   // gl.drawArrays(gl.TRIANGLE_FAN, 0, 4); // menggambar
 
+  let freeze = false;
+
+  canvas.addEventListener("click", function () {
+    freeze = !freeze;
+  });
+
   function render() {
     gl.clearColor(1.0, 0.65, 0.0, 1.0);  // Oranye
     //            Merah     Hijau   Biru    Transparansi
+
     gl.clear(gl.COLOR_BUFFER_BIT);
-    theta += 0.0125; // kecepatan rotasi
-    gl.uniform1f(uTheta, theta);
+    if (!freeze) {
+      theta += 0.1; // kecepatan rotasi
+      gl.uniform1f(uTheta, theta);
+    }
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
     requestAnimationFrame(render);
   }
