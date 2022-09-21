@@ -2,6 +2,10 @@ function main() {
   const canvas = document.querySelector("#render");
   const gl = canvas.getContext("webgl"); // mengaktifkan property2 gambar
 
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
   // === mendefinisikan shaders code ===> Dijalankan GPU
 
   const x1 = 0.5;
@@ -14,7 +18,12 @@ function main() {
   const y4 = 0.5;
 
   // const vertices = [x1, y1, x2, y2];
-  const vertices = [x1, y1, x2, y2, x3, y3, x4, y4];
+  const vertices = [
+    x1, y1, 0.0, 1.0, 1.0,
+    x2, y2, 1.0, 0.0, 1.0,
+    x3, y3, 1.0, 1.0, 0.0,
+    x4, y4, 1.0, 1.0, 1.0
+  ];
 
   const buffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -23,7 +32,11 @@ function main() {
   // vertex shader --> disimpan sbg string --> untuk posisi
   const vertexShaderCode = `
   attribute vec2 aPosition;
+  attribute vec3 aColor;
+
+  varying vec3 vColor;
 void main() {
+ vColor = aColor;
   float x = aPosition.x;
   float y = aPosition.y;
   float z = 0.0;
@@ -41,11 +54,12 @@ void main() {
   // Fragment shader --> untuk warna
   const fragmentShaderCode = `
   precision mediump float;
+  varying vec3 vColor;
 void main() {
-  float r = 0.0;
-  float g = 0.0;
-  float b = 0.0;
-  gl_FragColor = vec4(r, g, b, 1.0);
+  // float r = 0.0;
+  // float g = 0.0;
+  // float b = 0.0;
+  gl_FragColor = vec4(vColor, 1.0);
 }
 `;
 
@@ -67,9 +81,15 @@ void main() {
   const aPosition = gl.getAttribLocation(shaderProgram, "aPosition");
 
   // gl.vertexAttribPointer(index, size, type, normalized, stride, offset);
-  gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 0, 0);
+  gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
 
   gl.enableVertexAttribArray(aPosition);
+
+  const aColor = gl.getAttribLocation(shaderProgram, "aColor");
+  gl.vertexAttribPointer(aColor, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+
+  gl.enableVertexAttribArray(aColor);
+
 
   // ==== Memulai penggambaran ====
 
