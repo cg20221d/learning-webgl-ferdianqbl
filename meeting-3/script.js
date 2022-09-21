@@ -8,48 +8,37 @@ function main() {
 
   // === mendefinisikan shaders code ===> Dijalankan GPU
 
-  const x1 = 0.5;
-  const y1 = 0.5;
-  const x2 = 0.5;
-  const y2 = -0.5;
-  const x3 = -0.5;
-  const y3 = -0.5;
-  const x4 = -0.5;
-  const y4 = 0.5;
-
-  // const vertices = [x1, y1, x2, y2];
-  const vertices = [
-    x1, y1, 0.0, 1.0, 1.0,
-    x2, y2, 1.0, 0.0, 1.0,
-    x3, y3, 1.0, 1.0, 0.0,
-    x4, y4, 1.0, 1.0, 1.0
+  var vertices = [
+    0.5, 0.5, 0.0, 1.0, 1.0,   // A: kanan atas    (BIRU LANGIT)
+    0.0, 0.0, 1.0, 0.0, 1.0,   // B: bawah tengah  (MAGENTA)
+    -0.5, 0.5, 1.0, 1.0, 0.0,  // C: kiri atas     (KUNING)
+    0.0, 1.0, 1.0, 1.0, 1.0    // D: atas tengah   (PUTIH)
   ];
 
   const buffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 
-  // vertex shader --> disimpan sbg string --> untuk posisi
+
+
   const vertexShaderCode = `
   attribute vec2 aPosition;
   attribute vec3 aColor;
-
+  uniform float uTheta;
   varying vec3 vColor;
 void main() {
  vColor = aColor;
-  float x = aPosition.x;
-  float y = aPosition.y;
-  float z = 0.0;
-  float w = 1.0;
-  gl_PointSize = 10.0;
-  gl_Position = vec4(x, y, z, w);
+  float x = -sin(uTheta) * aPosition.x + cos(uTheta) * aPosition.y;
+  float y = cos(uTheta) * aPosition.x + sin(uTheta) * aPosition.y;
+  gl_Position = vec4(x, y, 0.0, 1.0);
+  vColor = aColor;
   
 }
 `;
 
-  const vertexShaderObject = gl.createShader(gl.VERTEX_SHADER); // membuat objek vertex shader
-  gl.shaderSource(vertexShaderObject, vertexShaderCode); // menghubungkan objek vertex shader dengan code
-  gl.compileShader(vertexShaderObject); // mengcompile code vertex shader --> jadi .o
+  const vertexShaderObject = gl.createShader(gl.VERTEX_SHADER);
+  gl.shaderSource(vertexShaderObject, vertexShaderCode);
+  gl.compileShader(vertexShaderObject);
 
   // Fragment shader --> untuk warna
   const fragmentShaderCode = `
@@ -70,13 +59,15 @@ void main() {
   // wadah untuk menyimpan vertex shader dan fragment shader --> executable (.exe)
   const shaderProgram = gl.createProgram();
   gl.attachShader(shaderProgram, vertexShaderObject); // menyimpan vertex shader ke dalam program
-  gl.attachShader(shaderProgram, fragmentShaderObject); // menyimpan fragment shader ke dalam program
+  gl.attachShader(shaderProgram, fragmentShaderObject);
 
-  gl.linkProgram(shaderProgram); // mengcompile program --> jadi (.exe)
+  gl.linkProgram(shaderProgram);
 
-  gl.useProgram(shaderProgram); // menggunakan program
+  gl.useProgram(shaderProgram);
 
-  // ==== Mengajari GPU bagaimana caranya mengoleksi nilai posisi dari ARRAY_BUFFER untuk setiap verteks yang sedang diproses ====
+  // Variabel lokal
+  var theta = 0.0;
+  let uTheta = gl.getUniformLocation(shaderProgram, "uTheta");
 
   const aPosition = gl.getAttribLocation(shaderProgram, "aPosition");
 
@@ -86,7 +77,10 @@ void main() {
   gl.enableVertexAttribArray(aPosition);
 
   const aColor = gl.getAttribLocation(shaderProgram, "aColor");
-  gl.vertexAttribPointer(aColor, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+  gl.vertexAttribPointer(aColor, 3, gl.FLOAT, false,
+    5 * Float32Array.BYTES_PER_ELEMENT,
+    2 * Float32Array.BYTES_PER_ELEMENT
+  );
 
   gl.enableVertexAttribArray(aColor);
 
@@ -102,7 +96,20 @@ void main() {
   // gl.drawArrays(gl.LINES, 0, 4); // menggambar garis
   // gl.drawArrays(gl.LINES_LOOP, 0, 4); // menggamba
   // gl.drawArrays(gl.LINE_STRIP, 0, 4); // menggambar
-  gl.drawArrays(gl.TRIANGLES, 0, 3); // menggambar
-  // gl.drawArrays(gl.TRIANGLES_STRIP, 0, 4); // menggambar
-  // gl.drawArrays(gl.TRIANGLES_FAN, 0, 3); // menggambar
+  // gl.drawArrays(gl.LINE_LOOP, 0, 4); // menggambar
+  // gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); // menggambar
+  // gl.drawArrays(gl.TRIANGLE_FAN, 0, 4); // menggambar
+
+  function render() {
+    gl.clearColor(1.0, 0.65, 0.0, 1.0);  // Oranye
+    //            Merah     Hijau   Biru    Transparansi
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    theta += 0.0125; // kecepatan rotasi
+    gl.uniform1f(uTheta, theta);
+    gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+    requestAnimationFrame(render);
+  }
+  requestAnimationFrame(render);
+
+  // setInterval(render, 1000 / 60);
 }
